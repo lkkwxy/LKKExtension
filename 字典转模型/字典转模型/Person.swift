@@ -11,11 +11,23 @@ import Foundation
 class Person:NSObject {
     var name:String?
     var age:NSNumber?
+    var ID:String?
     var card:Card?
+    var persons:NSArray?
+    override func replacedKeyFromPropertyName() ->[String:String]{
+        return ["ID":"id"]
+    }
+    override func objectClassInArray() -> [String:String]{
+        return ["persons":"Person"]
+    }
+    override var description: String {
+        return "name = \(name),age = \(age)"
+    }
 }
 class Student:Person{
     var number:String?
     var score:NSNumber?
+    var scores:NSArray?
 }
 class Card:NSObject {
     var ID:String?

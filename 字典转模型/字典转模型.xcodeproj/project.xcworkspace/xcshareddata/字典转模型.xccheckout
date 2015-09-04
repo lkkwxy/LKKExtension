@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>IDESourceControlProjectFavoriteDictionaryKey</key>
+	<false/>
+	<key>IDESourceControlProjectIdentifier</key>
+	<string>C4B603BD-9ADE-4560-B563-C628EFCF3DE3</string>
+	<key>IDESourceControlProjectName</key>
+	<string>字典转模型</string>
+	<key>IDESourceControlProjectOriginsDictionary</key>
+	<dict>
+		<key>2A2EB58288F6036D1D0CE79C5AFBF9AE7AE9E384</key>
+		<string>github.com:lkkwxy/LKKExtension.git</string>
+	</dict>
+	<key>IDESourceControlProjectPath</key>
+	<string>字典转模型/字典转模型.xcodeproj</string>
+	<key>IDESourceControlProjectRelativeInstallPathDictionary</key>
+	<dict>
+		<key>2A2EB58288F6036D1D0CE79C5AFBF9AE7AE9E384</key>
+		<string>../../..</string>
+	</dict>
+	<key>IDESourceControlProjectURL</key>
+	<string>github.com:lkkwxy/LKKExtension.git</string>
+	<key>IDESourceControlProjectVersion</key>
+	<integer>111</integer>
+	<key>IDESourceControlProjectWCCIdentifier</key>
+	<string>2A2EB58288F6036D1D0CE79C5AFBF9AE7AE9E384</string>
+	<key>IDESourceControlProjectWCConfigurations</key>
+	<array>
+		<dict>
+			<key>IDESourceControlRepositoryExtensionIdentifierKey</key>
+			<string>public.vcs.git</string>
+			<key>IDESourceControlWCCIdentifierKey</key>
+			<string>2A2EB58288F6036D1D0CE79C5AFBF9AE7AE9E384</string>
+			<key>IDESourceControlWCCName</key>
+			<string>%E5%AD%97%E5%85%B8%E8%BD%AC%E6%A8%A1%E5%9E%8B%20</string>
+		</dict>
+	</array>
+</dict>
+</plist>

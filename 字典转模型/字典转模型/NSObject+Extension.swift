@@ -8,29 +8,59 @@
 
 import Foundation
 extension NSObject{
+    //把字典转换成模型
     class func objectWithKeyValues(keyValues:NSDictionary) -> AnyObject{
         let model = self.init()
         //获取所有的属性
         let properties = self.allProperties()
+        model.setValuesForProperties(properties, keyValues: keyValues)
+        return model
+    }
+    //把一个字典数组转成一个模型数组
+    class func objectArrayWithKeyValuesArray(array:NSArray) -> [AnyObject]{
+        var temp = Array<AnyObject>()
+        let properties = self.allProperties()
+        for(var i = 0;i < array.count;i++){
+            let keyValues = array[i] as? NSDictionary
+            if (keyValues != nil){
+                let model = self.init()
+                //为每个model赋值
+                model.setValuesForProperties(properties, keyValues: keyValues!)
+                temp.append(model)
+            }
+        }
+        return temp
+    }
+    //把一个字典里的值赋给一个对象的值
+    func setValuesForProperties(properties:[LKKProperty]?,keyValues:NSDictionary){
+        //判断属性数组是否存在
         if let _ = properties{
             for property in properties!{
+                //判断该属性是否属于Foundtation框架
                 if property.propertyType.isFromFoundtion {
-                    if let value = keyValues[property.propertyNmae]{
-                        //为model类赋值
-                        model.setValue(value, forKey: property.propertyNmae as String)
+                    if let value = keyValues[property.key]{
+                        //判断是否是数组，若是数组，判断数组里装的类是否是自定义类
+                        if property.propertyType.isArray && property.propertyType.arrayClass != nil && value is NSArray{
+                            //把字典数组转换成模型数组
+                            let temp = property.propertyType.arrayClass!.objectArrayWithKeyValuesArray(value as! NSArray)
+                            //为model类赋值
+                            self.setValue(temp, forKey: property.propertyNmae as String)
+                        }else{
+                            //为model类赋值
+                            self.setValue(value, forKey: property.propertyNmae as String)
+                        }
                     }
                 }else{
-                    if let value = keyValues[property.propertyNmae]{
+                    if let value = keyValues[property.key]{
                         if value is NSDictionary{
                             let subClass = property.propertyType.typeClass?.objectWithKeyValues(value as! NSDictionary)
                             //为model类赋值
-                            model.setValue(subClass, forKey: property.propertyNmae as String)
+                            self.setValue(subClass, forKey: property.propertyNmae as String)
                         }
                     }
                 }
             }
         }
-        return model
     }
     class func allProperties() -> [LKKProperty]?{
         let className = NSString(CString: class_getName(self), encoding: NSUTF8StringEncoding)
@@ -51,25 +81,54 @@ extension NSObject{
             if let _ = superM{
                 propertiesArray += superM!
             }
+            //获取映射的字典
+            let replacedDic = self.init().replacedKeyFromPropertyName()
             for var i = 0;i < Int(outCount);i++ {
                 let property = LKKProperty(property: properties[i])
+                //判断是否有映射
+                if let key = replacedDic[property.propertyNmae as String] {
+                    property.key = key
+                    print(key)
+                }
+                //判断是否是数组
+                if property.propertyType.isArray {
+                    let objectArray = self.init().objectClassInArray()
+                    //判断是否是自定义的类
+                    if let objectName = objectArray[property.propertyNmae as String]{
+                     
+                        property.propertyType.arrayClass = getClassWitnClassNmae(objectName)
+                    }
+                }
+                
                 propertiesArray.append(property)
             }
             return propertiesArray
         }
+    //子类重写这个方法，对字典里的key和类的属性进行映射
+    func replacedKeyFromPropertyName() ->[String:String]{
+        return ["":""]
+    }
+    //子类重写这个方法，说明数组里存放的数据类型
+    func objectClassInArray() -> [String:String]{
+        return ["":""]
+    }
 }
 class LKKProperty{
+    //属性名字
     var propertyNmae:NSString!
+    //属性名字对应的key
+    var key:String!
+    //属性
     var property:objc_property_t
+    //属性类型
     var propertyType:LKKType!
     init(property:objc_property_t){
         self.property = property
         self.propertyNmae = NSString(CString: property_getName(property), encoding: NSUTF8StringEncoding)
+        key = self.propertyNmae as String
         //自定义的类的Types格式为T@"_TtC15字典转模型4Card",N,&,Vcard
         //T+@+"+..+工程的名字+数字+类名+"+,+其他,而我们想要的只是类名，所以要修改这个字符串
         var code: NSString = NSString(CString: property_getAttributes(property), encoding: NSUTF8StringEncoding)!
-        print(code)
-        print(propertyNmae)
         //直接取出""中间的内容
         code = code.componentsSeparatedByString("\"")[1]
         let bundlePath = getBundleName()
@@ -92,20 +151,29 @@ class LKKProperty{
             //得到类名
             code = code.substringFromIndex(numberRange.length + numberRange.location)
         }
-
         self.propertyType = LKKType(code: code)
     }
 }
 class LKKType {
+    //类名字
     var code:NSString
+    //类的类型
     var typeClass:AnyClass?
+    //是否属于Foundtation框架
     var isFromFoundtion:Bool = true
+    //是否是数组
+    var isArray:Bool = false
+    //数组里面存放的类型
+    var arrayClass:AnyClass?
     init(code:NSString){
         self.code = code
         //判断是否属于Foundtation框架
         if self.code.hasPrefix("NS"){
             self.typeClass = NSClassFromString(self.code as String)
             self.isFromFoundtion = true
+            if self.code.hasPrefix("NSArray"){
+                self.isArray = true
+            }
         }else{
             //如果是自定义的类NSClassFromString这个方法传得字符串是工程的名字+类名
             self.typeClass = getClassWitnClassNmae(self.code as String)
