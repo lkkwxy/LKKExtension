@@ -77,7 +77,7 @@ extension NSObject{
             var propertiesArray = [LKKProperty]()
             let properties = class_copyPropertyList(self.classForCoder(),&outCount)
             //获取父类的所有属性
-            let superM = (self.superclass() as? NSObject.Type)! .allProperties()
+            let superM = (self.superclass() as! NSObject.Type) .allProperties()
             //let superM = self.superclass()?.allProperties()
             if let _ = superM{
                 propertiesArray += superM!
